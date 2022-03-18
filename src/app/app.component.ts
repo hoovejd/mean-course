@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { UserPost } from 'src/app/constants/UserPost';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'mean-course';
+  storedPosts: UserPost[] = [];
+
+  onPostAdded(post: UserPost) {
+    this.storedPosts.push(post);
+  }
 }

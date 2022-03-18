@@ -1,4 +1,5 @@
-import { Component } from "@angular/core";
+import { Component, EventEmitter, Output } from "@angular/core";
+import { UserPost } from 'src/app/constants/UserPost';
 
 @Component({
   selector: 'app-post-create',
@@ -6,11 +7,13 @@ import { Component } from "@angular/core";
   styleUrls: ['./post-create.component.css']
 })
 export class PostCreateComponent {
-  enteredValue:string ='';
-  newPost:string = 'NO CONTENT';
+  enteredContent: string = '';
+  enteredTitle: string = '';
+  @Output() postCreated = new EventEmitter(); // output make it so the parent can listen for the emitted event
 
-  onAddPost() {
-    this.newPost = this.enteredValue;
+  onAddPost(): void {
+    const post: UserPost = { title: this.enteredTitle, content: this.enteredContent };
+    this.postCreated.emit(post);
   }
 
 }

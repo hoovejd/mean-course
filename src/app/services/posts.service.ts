@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Post } from "../models/post.model";
+import { Post } from '../models/post.model';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -9,7 +9,7 @@ export class PostsService {
   private posts: Post[] = [];
   private postsUpdated = new Subject<Post[]>();
 
-  constructor() { }
+  constructor() {}
 
   getPosts(): Post[] {
     return [...this.posts]; // copy all items from this.posts array and put them in a new array

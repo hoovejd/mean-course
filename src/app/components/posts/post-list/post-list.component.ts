@@ -12,19 +12,19 @@ export class PostListComponent implements OnInit {
   posts: Post[] = [];
   private postsSubscription: Subscription = new Subscription();
 
-  constructor(public postsService: PostsService) { }
+  constructor(public postsService: PostsService) {}
 
   ngOnInit(): void {
-
     // get posts on init, this isn't really necessary
     this.posts = this.postsService.getPosts();
 
     // subscribe to the postsUpdated Subject in the PostService. Anytime there is an update to the posts in PostService, update our local post array
-    this.postsSubscription = this.postsService.getPostsUpdatedListener().subscribe((posts: Post[]) => { this.posts = posts; });
+    this.postsSubscription = this.postsService.getPostsUpdatedListener().subscribe((posts: Post[]) => {
+      this.posts = posts;
+    });
   }
 
   ngOnDestroy(): void {
     this.postsSubscription.unsubscribe();
   }
-
 }

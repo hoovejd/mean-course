@@ -1,4 +1,6 @@
 import express from 'express';
+//import * as Post from './models/post.js';
+import Post from './models/post';
 
 export const app = express();
 app.use(express.json());
@@ -11,7 +13,10 @@ app.use((req, res, next) => {
 });
 
 app.post('/api/posts', (req, res, next) => {
-  const post = req.body;
+  const post = new Post({
+    title: req.body.title,
+    content: req.body.content
+  });
   console.log(post);
   res.status(201).json({ message: 'Post added successfully' });
 });

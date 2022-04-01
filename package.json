@@ -28,6 +28,7 @@
     "@angular/router": "~13.3.0",
     "debug": "^4.3.4",
     "express": "^4.17.3",
+    "mongoose": "^6.2.9",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

@@ -1,12 +1,53 @@
-import { createServer } from 'http';
 import { app } from './api/app.js';
+import http from 'http';
+import Debug from 'debug';
+const debug = Debug('MeanApi');
 
-const hostname = '127.0.0.1';
-const port = 3000;
+function normalizePort(val) {
+  var port = parseInt(val, 10);
 
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+const onError = (error) => {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+  const bind = typeof port === 'string' ? 'pipe ' + port : 'port ' + port;
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+};
+
+const onListening = () => {
+  const addr = server.address();
+  const bind = typeof port === 'string' ? 'pipe ' + port : 'port ' + port;
+  debug('Listenings on ' + bind);
+};
+
+const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
-const server = createServer(app);
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
+const server = http.createServer(app);
+server.on('error', onError);
+server.on('listening', onListening);
+server.listen(port);

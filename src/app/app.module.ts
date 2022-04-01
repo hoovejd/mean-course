@@ -12,26 +12,12 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/header/header/header.component';
 import { PostCreateComponent } from './components/posts/post-create/post-create.component';
 import { PostListComponent } from './components/posts/post-list/post-list.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    PostCreateComponent,
-    HeaderComponent,
-    PostListComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
-    BrowserAnimationsModule,
-    MatInputModule,
-    MatCardModule,
-    MatButtonModule,
-    MatToolbarModule,
-    MatExpansionModule
-  ],
+  declarations: [AppComponent, PostCreateComponent, HeaderComponent, PostListComponent],
+  imports: [BrowserModule, AppRoutingModule, FormsModule, BrowserAnimationsModule, MatInputModule, MatCardModule, MatButtonModule, MatToolbarModule, MatExpansionModule, HttpClientModule],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

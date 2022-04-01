@@ -15,8 +15,7 @@ export class PostListComponent implements OnInit {
   constructor(public postsService: PostsService) {}
 
   ngOnInit(): void {
-    // get posts on init, this isn't really necessary
-    this.posts = this.postsService.getPosts();
+    this.postsService.getPosts();
 
     // subscribe to the postsUpdated Subject in the PostService. Anytime there is an update to the posts in PostService, update our local post array
     this.postsSubscription = this.postsService.getPostsUpdatedListener().subscribe((posts: Post[]) => {

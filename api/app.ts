@@ -1,19 +1,19 @@
+import { Request, Response, NextFunction } from 'express';
 import express from 'express';
-//import * as Post from './models/post.js';
-import Post from './models/post';
+import { PostModel } from './models/post';
 
 export const app = express();
 app.use(express.json());
 
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
   next();
 });
 
-app.post('/api/posts', (req, res, next) => {
-  const post = new Post({
+app.post('/api/posts', (req: Request, res: Response, next: NextFunction) => {
+  const post = new PostModel({
     title: req.body.title,
     content: req.body.content
   });
@@ -21,7 +21,7 @@ app.post('/api/posts', (req, res, next) => {
   res.status(201).json({ message: 'Post added successfully' });
 });
 
-app.get('/api/posts', (req, res, next) => {
+app.get('/api/posts', (req: Request, res: Response, next: NextFunction) => {
   const posts = [
     {
       id: 'fadf12421l',

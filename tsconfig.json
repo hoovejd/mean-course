@@ -1,10 +1,14 @@
 /* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
+  "ts-node": {
+    "compilerOptions": { "module": "commonjs" }
+  },
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
     "strict": true,
     "strictNullChecks": false,
     "noImplicitOverride": true,
@@ -17,7 +21,7 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2017",
+    "target": "es2020",
     "module": "es2020",
     "lib": ["es2020", "dom"]
   },

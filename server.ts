@@ -1,9 +1,9 @@
-import { app } from './api/app.js';
-import http from 'http';
+import { app } from './api/app';
+import * as http from 'http';
 import Debug from 'debug';
 const debug = Debug('MeanApi');
 
-function normalizePort(val) {
+function normalizePort(val: string) {
   var port = parseInt(val, 10);
 
   if (isNaN(port)) {
@@ -19,7 +19,7 @@ function normalizePort(val) {
   return false;
 }
 
-const onError = (error) => {
+const onError = (error: any) => {
   if (error.syscall !== 'listen') {
     throw error;
   }
@@ -44,7 +44,7 @@ const onListening = () => {
   debug('Listenings on ' + bind);
 };
 
-const port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env['PORT'] || '3000');
 app.set('port', port);
 
 const server = http.createServer(app);

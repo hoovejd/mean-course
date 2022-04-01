@@ -1,6 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import express from 'express';
 import { PostModel } from './models/post';
+import mongoose from 'mongoose';
+
+mongoose
+  .connect('mongodb://localhost:27017/test')
+  .then(() => console.log('Connected to database!'))
+  .catch(() => console.log('DB connection failed yo!'));
 
 export const app = express();
 app.use(express.json());
@@ -17,6 +23,7 @@ app.post('/api/posts', (req: Request, res: Response, next: NextFunction) => {
     title: req.body.title,
     content: req.body.content
   });
+  post.save();
   console.log(post);
   res.status(201).json({ message: 'Post added successfully' });
 });

@@ -45,4 +45,11 @@ export class PostsService {
       this.postsUpdated.next([...this.posts]); // If posts array changes, send any listeners a copy of the updated posts array!
     });
   }
+
+  deletePost(postId: string) {
+    this.http.delete(`http://localhost:3000/api/posts/${postId}`).subscribe(() => {
+      this.posts = this.posts.filter((post) => post.id !== postId);
+      this.postsUpdated.next([...this.posts]);
+    });
+  }
 }

@@ -14,7 +14,7 @@ app.use(express.json());
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
   next();
 });
 
@@ -26,6 +26,13 @@ app.post('/api/posts', (req: Request, res: Response, next: NextFunction) => {
   post.save().then((createdPost) => res.status(201).json({ message: 'Post added successfully', postId: createdPost._id }));
 });
 
+app.put('/api/posts/:id', (req, res, next) => {
+  const post = new PostModel({ _id: req.body.id, title: req.body.title, content: req.body.content });
+  PostModel.updateOne({ _id: req.params.id }, post).then((result) => {
+    res.status(200).json({ message: 'Update successful!' });
+  });
+});
+
 app.get('/api/posts', (req: Request, res: Response, next: NextFunction) => {
   PostModel.find().then((foundPosts) =>
     res.status(200).json({
@@ -33,6 +40,16 @@ app.get('/api/posts', (req: Request, res: Response, next: NextFunction) => {
       posts: foundPosts
     })
   );
+});
+
+app.get('/api/posts/:id', (req, res, next) => {
+  PostModel.findById(req.params.id).then((post) => {
+    if (post) {
+      res.status(200).json(post);
+    } else {
+      res.status(404).json({ message: 'Post not found!' });
+    }
+  });
 });
 
 app.delete('/api/posts/:id', (req, res, next) => {

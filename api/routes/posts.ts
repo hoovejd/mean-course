@@ -1,7 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { PostModel } from '../models/post';
 import multer, { StorageEngine } from 'multer';
-import { Query } from '@angular/core';
 
 export const postsRouter = express.Router();
 

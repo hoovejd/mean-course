@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { postsRouter } from './routes/posts';
+import { userRouter } from './routes/user';
 var path = require('path');
 
 mongoose
@@ -20,3 +21,4 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use('/api/posts', postsRouter);
+app.use('/api/user', userRouter);

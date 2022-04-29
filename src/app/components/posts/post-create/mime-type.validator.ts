@@ -1,10 +1,13 @@
 import { AbstractControl } from '@angular/forms';
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer, of } from 'rxjs';
 
 // this is an implementation of an Angular/forms/AsyncValidator
 // [key: string] does not mean an array, it means its a dynamic property with any name that is a string, the value of the property could be anything (any)
 // this makes the function generic, it can handle any input
 export const mimeType = (control: AbstractControl): Promise<{ [key: string]: any }> | Observable<{ [key: string]: any }> => {
+  if (typeof control.value === 'string') {
+    return of(null);
+  }
   const file = control.value as File;
   const fileReader = new FileReader();
   const frObs = new Observable((observer: Observer<{ [key: string]: any }>) => {

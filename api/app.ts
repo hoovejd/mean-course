@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { postsRouter } from './routes/posts';
+var path = require('path');
 
 mongoose
   .connect('mongodb://localhost:27017/test')
@@ -9,6 +10,7 @@ mongoose
 
 export const app = express();
 app.use(express.json());
+app.use('/images', express.static(path.join('api/images')));
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('Access-Control-Allow-Origin', '*');

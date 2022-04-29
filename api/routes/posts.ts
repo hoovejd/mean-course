@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { PostModel } from '../models/post';
 import multer, { StorageEngine } from 'multer';
+import { Query } from '@angular/core';
 
 export const postsRouter = express.Router();
 
@@ -47,13 +48,19 @@ postsRouter.put('/:id', multer({ storage: diskStorage }).single('image'), (req, 
     imagePath = `${url}/images/${req.file.filename}`;
   }
   const post = new PostModel({ _id: req.body.id, title: req.body.title, content: req.body.content, imagePath: imagePath });
-  PostModel.updateOne({ _id: req.body.id }, post).then((result) => {
+  PostModel.updateOne({ _id: req.params['id'] }, post).then((result) => {
     res.status(200).json({ message: 'Update successful!' });
   });
 });
 
 postsRouter.get('', (req: Request, res: Response, next: NextFunction) => {
-  PostModel.find().then((foundPosts) =>
+  const pageSize: number = +req.query['pageSize']; // The + symbol converts to number
+  const currentPage: number = +req.query['page'];
+  const postQuery = PostModel.find(); // default to find everything
+  if (pageSize && currentPage) {
+    postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
+  }
+  postQuery.then((foundPosts) =>
     res.status(200).json({
       message: 'Posts fetched successfully!',
       posts: foundPosts

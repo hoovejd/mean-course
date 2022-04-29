@@ -57,15 +57,22 @@ postsRouter.get('', (req: Request, res: Response, next: NextFunction) => {
   const pageSize: number = +req.query['pageSize']; // The + symbol converts to number
   const currentPage: number = +req.query['page'];
   const postQuery = PostModel.find(); // default to find everything
+  let fetchedPosts: any;
   if (pageSize && currentPage) {
     postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
   }
-  postQuery.then((foundPosts) =>
-    res.status(200).json({
-      message: 'Posts fetched successfully!',
-      posts: foundPosts
+  postQuery
+    .then((foundPosts) => {
+      fetchedPosts = foundPosts;
+      return PostModel.count();
     })
-  );
+    .then((count) => {
+      res.status(200).json({
+        message: 'Posts fetched successfully!',
+        posts: fetchedPosts,
+        postsCount: count
+      });
+    });
 });
 
 postsRouter.get('/:id', (req, res, next) => {
@@ -80,7 +87,6 @@ postsRouter.get('/:id', (req, res, next) => {
 
 postsRouter.delete('/:id', (req, res, next) => {
   PostModel.deleteOne({ _id: req.params.id }).then((result) => {
-    console.log(result);
     res.status(200).json({ message: 'Post deleted!' });
   });
 });

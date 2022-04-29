@@ -12,7 +12,7 @@ import { PageEvent } from '@angular/material/paginator';
 export class PostListComponent implements OnInit {
   posts: Post[] = [];
   isLoading: boolean = false;
-  totalPosts = 10;
+  totalPosts = 0;
   postsPerPage = 2;
   currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10];
@@ -25,20 +25,25 @@ export class PostListComponent implements OnInit {
     this.postsService.getPosts(this.postsPerPage, this.currentPage);
 
     // subscribe to the postsUpdated Subject in the PostService. Anytime there is an update to the posts in PostService, update our local post array
-    this.postsSubscription = this.postsService.getPostsUpdatedListener().subscribe((posts: Post[]) => {
+    this.postsSubscription = this.postsService.getPostsUpdatedListener().subscribe((postData: { posts: Post[]; postsCount: number }) => {
       this.isLoading = false;
-      this.posts = posts;
+      this.posts = postData.posts;
+      this.totalPosts = postData.postsCount;
     });
   }
 
   onChangedPage(pageData: PageEvent) {
+    this.isLoading = true;
     this.postsPerPage = pageData.pageSize;
     this.currentPage = pageData.pageIndex + 1;
     this.postsService.getPosts(this.postsPerPage, this.currentPage);
   }
 
   onDelete(postId: string) {
-    this.postsService.deletePost(postId);
+    this.isLoading = true;
+    this.postsService.deletePost(postId).subscribe(() => {
+      this.postsService.getPosts(this.postsPerPage, this.currentPage);
+    });
   }
 
   ngOnDestroy(): void {

@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs';
 import { Router } from '@angular/router';
-import { Form } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'

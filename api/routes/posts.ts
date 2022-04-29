@@ -28,11 +28,16 @@ const diskStorage: StorageEngine = multer.diskStorage({
 });
 
 postsRouter.post('', multer({ storage: diskStorage }).single('image'), (req: Request, res: Response, next: NextFunction) => {
+  const url = `${req.protocol}://${req.get('host')}`;
   const post = new PostModel({
     title: req.body.title,
-    content: req.body.content
+    content: req.body.content,
+    imagePath: `${url}/images/${req.file.filename}`
   });
-  post.save().then((createdPost) => res.status(201).json({ message: 'Post added successfully', postId: createdPost._id }));
+  post.save().then(
+    // using the spread operator (...) to copy all properties of createdPost object into new post object
+    (createdPost) => res.status(201).json({ message: 'Post added successfully', post: { ...createdPost, id: createdPost._id } })
+  );
 });
 
 postsRouter.put('/:id', (req, res, next) => {

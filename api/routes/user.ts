@@ -1,6 +1,7 @@
 import { UserModel } from '../models/user';
 import express, { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 export const userRouter = express.Router();
 
@@ -24,4 +25,32 @@ userRouter.post('/signup', (req: Request, res: Response, next: NextFunction) => 
         });
       });
   });
+});
+
+userRouter.post('/login', (req: Request, res: Response, next: NextFunction): any => {
+  let fetchedUser: any;
+  UserModel.findOne({ email: req.body.email })
+    .then((user): any => {
+      if (!user) {
+        return res.status(401).json({
+          message: 'Authentication failed yo!'
+        });
+      }
+      fetchedUser = user;
+      return bcrypt.compare(req.body.password, user.password);
+    })
+    .then((result): any => {
+      if (!result) {
+        return res.status(401).json({
+          message: 'Authentication failed yo!'
+        });
+      }
+      const token = jwt.sign({ email: fetchedUser.email, userId: fetchedUser._id }, 'secret_this_should_be_really_long', { expiresIn: '1h' });
+      res.status(200).json({ token: token });
+    })
+    .catch((err) => {
+      return res.status(401).json({
+        message: 'Authentication failed yo!'
+      });
+    });
 });

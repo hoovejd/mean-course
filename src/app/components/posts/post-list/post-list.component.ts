@@ -17,6 +17,7 @@ export class PostListComponent implements OnInit {
   postsPerPage = 25;
   currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10, 25];
+  userId: string;
   private postsSubscription: Subscription = new Subscription();
   private authStatusSubscription: Subscription;
   public userIsAuthenticated: boolean = false;
@@ -26,6 +27,7 @@ export class PostListComponent implements OnInit {
   ngOnInit(): void {
     this.isLoading = true;
     this.postsService.getPosts(this.postsPerPage, this.currentPage);
+    this.userId = this.authService.getUserId();
 
     // subscribe to the postsUpdated Subject in the PostService. Anytime there is an update to the posts in PostService, update our local post array
     this.postsSubscription = this.postsService.getPostsUpdatedListener().subscribe((postData: { posts: Post[]; postsCount: number }) => {
@@ -36,6 +38,7 @@ export class PostListComponent implements OnInit {
     this.userIsAuthenticated = this.authService.getIsAuthenticated();
     this.authStatusSubscription = this.authService.getAuthStatusListener().subscribe((isAuthenticated) => {
       this.userIsAuthenticated = isAuthenticated;
+      this.userId = this.authService.getUserId();
     });
   }
 

@@ -1,4 +1,5 @@
 import { HttpClient } from '@angular/common/http';
+import { ThisReceiver } from '@angular/compiler';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -40,9 +41,7 @@ export class AuthService {
       this.token = response.token;
       if (this.token) {
         const expiresInDurationMilliseconds = response.expiresIn * 1000;
-        this.tokenTimer = setTimeout(() => {
-          this.logout();
-        }, expiresInDurationMilliseconds); // create callback timer that calls logout after timer expires
+        this.setAuthTimer(expiresInDurationMilliseconds);
         this.isAuthenticated = true;
         this.authStatusListener.next(true);
         console.log('got new incoming token from api: ' + this.token);
@@ -50,6 +49,18 @@ export class AuthService {
         this.router.navigate(['/']);
       }
     });
+  }
+
+  loadExistingAuth() {
+    const authInformation = this.getAuthData();
+    if (!authInformation) return;
+    const expiresInMilliseconds = authInformation.expirationDate.getTime() - new Date().getTime();
+    if (expiresInMilliseconds > 0) {
+      this.token = authInformation.token;
+      this.isAuthenticated = true;
+      this.setAuthTimer(expiresInMilliseconds);
+      this.authStatusListener.next(true);
+    }
   }
 
   logout() {
@@ -61,6 +72,13 @@ export class AuthService {
     this.router.navigate(['/']);
   }
 
+  // create callback timer that calls logout after timer expires
+  private setAuthTimer(milliseconds: number) {
+    this.tokenTimer = setTimeout(() => {
+      this.logout();
+    }, milliseconds);
+  }
+
   private saveAuthData(token: string, expirationDate: Date) {
     localStorage.setItem('token', token);
     localStorage.setItem('expiration', expirationDate.toISOString());
@@ -69,5 +87,15 @@ export class AuthService {
   private clearAuthData() {
     localStorage.removeItem('token');
     localStorage.removeItem('expiration');
+  }
+
+  private getAuthData() {
+    const token = localStorage.getItem('token');
+    const expirationDate = localStorage.getItem('expiration');
+    if (!token || !expirationDate) return;
+    return {
+      token: token,
+      expirationDate: new Date(expirationDate)
+    };
   }
 }

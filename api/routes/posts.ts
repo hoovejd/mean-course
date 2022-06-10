@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { PostModel } from '../models/post';
 import multer, { StorageEngine } from 'multer';
+import AuthMiddleware from '../middleware/check-auth';
 
 export const postsRouter = express.Router();
 
@@ -27,7 +28,7 @@ const diskStorage: StorageEngine = multer.diskStorage({
   }
 });
 
-postsRouter.post('', multer({ storage: diskStorage }).single('image'), (req: Request, res: Response, next: NextFunction) => {
+postsRouter.post('', AuthMiddleware.checkAuthMiddlewareFunction, multer({ storage: diskStorage }).single('image'), (req: Request, res: Response, next: NextFunction) => {
   const url = `${req.protocol}://${req.get('host')}`;
   const post = new PostModel({
     title: req.body.title,
@@ -40,7 +41,7 @@ postsRouter.post('', multer({ storage: diskStorage }).single('image'), (req: Req
   );
 });
 
-postsRouter.put('/:id', multer({ storage: diskStorage }).single('image'), (req, res, next) => {
+postsRouter.put('/:id', AuthMiddleware.checkAuthMiddlewareFunction, multer({ storage: diskStorage }).single('image'), (req, res, next) => {
   let imagePath = req.body.imagePath;
   if (req.file) {
     const url = `${req.protocol}://${req.get('host')}`;
@@ -74,8 +75,8 @@ postsRouter.get('', (req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-postsRouter.get('/:id', (req, res, next) => {
-  PostModel.findById(req.params.id).then((post) => {
+postsRouter.get('/:id', (req: Request, res: Response, next: NextFunction) => {
+  PostModel.findById(req.params['id']).then((post) => {
     if (post) {
       res.status(200).json(post);
     } else {
@@ -84,8 +85,8 @@ postsRouter.get('/:id', (req, res, next) => {
   });
 });
 
-postsRouter.delete('/:id', (req, res, next) => {
-  PostModel.deleteOne({ _id: req.params.id }).then((result) => {
+postsRouter.delete('/:id', AuthMiddleware.checkAuthMiddlewareFunction, (req: Request, res: Response, next: NextFunction) => {
+  PostModel.deleteOne({ _id: req.params['id'] }).then((result) => {
     res.status(200).json({ message: 'Post deleted!' });
   });
 });

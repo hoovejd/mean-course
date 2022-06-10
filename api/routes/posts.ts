@@ -33,7 +33,8 @@ postsRouter.post('', AuthMiddleware.checkAuthMiddlewareFunction, multer({ storag
   const post = new PostModel({
     title: req.body.title,
     content: req.body.content,
-    imagePath: `${url}/images/${req.file.filename}`
+    imagePath: `${url}/images/${req.file.filename}`,
+    creator: req.userData.userId
   });
   post.save().then(
     // using the spread operator (...) to copy all properties of createdPost object into new post object
@@ -41,15 +42,19 @@ postsRouter.post('', AuthMiddleware.checkAuthMiddlewareFunction, multer({ storag
   );
 });
 
-postsRouter.put('/:id', AuthMiddleware.checkAuthMiddlewareFunction, multer({ storage: diskStorage }).single('image'), (req, res, next) => {
+postsRouter.put('/:id', AuthMiddleware.checkAuthMiddlewareFunction, multer({ storage: diskStorage }).single('image'), (req: Request, res: Response, next: NextFunction) => {
   let imagePath = req.body.imagePath;
   if (req.file) {
     const url = `${req.protocol}://${req.get('host')}`;
     imagePath = `${url}/images/${req.file.filename}`;
   }
   const post = new PostModel({ _id: req.body.id, title: req.body.title, content: req.body.content, imagePath: imagePath });
-  PostModel.updateOne({ _id: req.params['id'] }, post).then((result) => {
-    res.status(200).json({ message: 'Update successful!' });
+  PostModel.updateOne({ _id: req.params['id'], creator: req.userData.userId }, post).then((result) => {
+    if (result.modifiedCount > 0) {
+      res.status(200).json({ message: 'Update successful!' });
+    } else {
+      res.status(401).json({ message: 'Not authorized!' });
+    }
   });
 });
 
@@ -86,7 +91,11 @@ postsRouter.get('/:id', (req: Request, res: Response, next: NextFunction) => {
 });
 
 postsRouter.delete('/:id', AuthMiddleware.checkAuthMiddlewareFunction, (req: Request, res: Response, next: NextFunction) => {
-  PostModel.deleteOne({ _id: req.params['id'] }).then((result) => {
-    res.status(200).json({ message: 'Post deleted!' });
+  PostModel.deleteOne({ _id: req.params['id'], creator: req.userData.userId }).then((result) => {
+    if (result.deletedCount > 0) {
+      res.status(200).json({ message: 'Post deleted!' });
+    } else {
+      res.status(401).json({ message: 'Not authorized!' });
+    }
   });
 });

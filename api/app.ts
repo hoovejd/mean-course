@@ -9,6 +9,14 @@ mongoose
   .then(() => console.log('Connected to database!'))
   .catch(() => console.log('DB connection failed yo!'));
 
+declare global {
+  namespace Express {
+    interface Request {
+      userData?: { email: string; userId: string };
+    }
+  }
+}
+
 export const app = express();
 app.use(express.json());
 app.use('/images', express.static(path.join('api/images')));

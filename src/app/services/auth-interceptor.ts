@@ -11,7 +11,11 @@ export class AuthInterceptor implements HttpInterceptor {
   // it will intercept all outgoing requests (to the api) and set the user token in the authorization variable within the request header
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const authToken = this.authService.getToken();
-    console.log('attaching outgoing token to api request: ' + authToken);
+    if (authToken) {
+      console.log('attaching outgoing token to api request: ' + authToken);
+    } else {
+      console.log('no token exists, you need to login!');
+    }
 
     // you must not modify the original request, so clone it and set the token! Adding Bearer is just following convention!
     const authRequest = req.clone({ headers: req.headers.set('Authorization', `Bearer ${authToken}`) });

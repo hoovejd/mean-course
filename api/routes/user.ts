@@ -46,6 +46,7 @@ userRouter.post('/login', (req: Request, res: Response, next: NextFunction): any
         });
       }
       const token = jwt.sign({ email: fetchedUser.email, userId: fetchedUser._id }, 'secret_this_should_be_really_long', { expiresIn: '1h' });
+      console.log('api just generated a fresh new token: ' + token);
       res.status(200).json({ token: token });
     })
     .catch((err) => {

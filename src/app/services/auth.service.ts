@@ -1,5 +1,4 @@
 import { HttpClient } from '@angular/common/http';
-import { ThisReceiver } from '@angular/compiler';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -35,25 +34,29 @@ export class AuthService {
 
   createUser(email: string, password: string) {
     const authData: AuthData = { email: email, password: password };
-    this.http.post('http://localhost:3000/api/user/signup', authData).subscribe((response) => {
-      console.log(response);
+    return this.http.post('http://localhost:3000/api/user/signup', authData).subscribe({
+      complete: () => this.router.navigate(['/']),
+      error: (e) => this.authStatusListener.next(false)
     });
   }
 
   login(email: string, password: string) {
     const authData: AuthData = { email: email, password: password };
-    this.http.post<{ token: string; expiresIn: number; userId: string }>('http://localhost:3000/api/user/login', authData).subscribe((response) => {
-      this.token = response.token;
-      if (this.token) {
-        const expiresInDurationMilliseconds = response.expiresIn * 1000;
-        this.setAuthTimer(expiresInDurationMilliseconds);
-        this.isAuthenticated = true;
-        this.userId = response.userId;
-        this.authStatusListener.next(true);
-        console.log('got new incoming token from api: ' + this.token);
-        this.saveAuthData(this.token, new Date(new Date().getTime() + expiresInDurationMilliseconds), this.userId);
-        this.router.navigate(['/']);
-      }
+    this.http.post<{ token: string; expiresIn: number; userId: string }>('http://localhost:3000/api/user/login', authData).subscribe({
+      next: (response) => {
+        this.token = response.token;
+        if (this.token) {
+          const expiresInDurationMilliseconds = response.expiresIn * 1000;
+          this.setAuthTimer(expiresInDurationMilliseconds);
+          this.isAuthenticated = true;
+          this.userId = response.userId;
+          this.authStatusListener.next(true);
+          console.log('got new incoming token from api: ' + this.token);
+          this.saveAuthData(this.token, new Date(new Date().getTime() + expiresInDurationMilliseconds), this.userId);
+          this.router.navigate(['/']);
+        }
+      },
+      error: (e) => this.authStatusListener.next(false)
     });
   }
 

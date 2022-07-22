@@ -41,7 +41,7 @@ exports.userLogin = (req: Request, res: Response, next: NextFunction): any => {
           message: 'Authentication failed yo!'
         });
       }
-      const token = jwt.sign({ email: fetchedUser.email, userId: fetchedUser._id }, 'secret_this_should_be_really_long', { expiresIn: '1h' });
+      const token = jwt.sign({ email: fetchedUser.email, userId: fetchedUser._id }, process.env['JWT_KEY'], { expiresIn: '1h' });
       console.log('api just generated a fresh new token: ' + token);
       res.status(200).json({ token: token, expiresIn: 3600, userId: fetchedUser._id }); //send 3600 second duration (1 hour)
     })

@@ -1,0 +1,6 @@
+{
+  "env": {
+    "MONGO_CONNECTION_STRING": "mongodb://localhost:27017/test",
+    "JWT_KEY": "secret_this_should_be_really_long"
+  }
+}

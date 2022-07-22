@@ -17,7 +17,8 @@ import { SignupComponent } from './components/auth/signup/signup.component';
 import { HeaderComponent } from './components/header/header.component';
 import { PostCreateComponent } from './components/posts/post-create/post-create.component';
 import { PostListComponent } from './components/posts/post-list/post-list.component';
-import { AuthInterceptor } from './services/auth-interceptor';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { ErrorInterceptor } from './interceptors/error.interceptor';
 
 @NgModule({
   declarations: [AppComponent, PostCreateComponent, HeaderComponent, PostListComponent, LoginComponent, SignupComponent],
@@ -36,7 +37,10 @@ import { AuthInterceptor } from './services/auth-interceptor';
     MatProgressSpinnerModule,
     HttpClientModule
   ],
-  providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

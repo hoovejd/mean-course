@@ -36,10 +36,13 @@ postsRouter.post('', AuthMiddleware.checkAuthMiddlewareFunction, multer({ storag
     imagePath: `${url}/images/${req.file.filename}`,
     creator: req.userData.userId
   });
-  post.save().then(
-    // using the spread operator (...) to copy all properties of createdPost object into new post object
-    (createdPost) => res.status(201).json({ message: 'Post added successfully', post: { ...createdPost, id: createdPost._id } })
-  );
+  post
+    .save()
+    .then(
+      // using the spread operator (...) to copy all properties of createdPost object into new post object
+      (createdPost) => res.status(201).json({ message: 'Post added successfully', post: { ...createdPost, id: createdPost._id } })
+    )
+    .catch((error) => res.status(500).json({ message: 'Creating a post failed!' }));
 });
 
 postsRouter.put('/:id', AuthMiddleware.checkAuthMiddlewareFunction, multer({ storage: diskStorage }).single('image'), (req: Request, res: Response, next: NextFunction) => {
@@ -49,13 +52,17 @@ postsRouter.put('/:id', AuthMiddleware.checkAuthMiddlewareFunction, multer({ sto
     imagePath = `${url}/images/${req.file.filename}`;
   }
   const post = new PostModel({ _id: req.body.id, title: req.body.title, content: req.body.content, imagePath: imagePath, creator: req.userData.userId });
-  PostModel.updateOne({ _id: req.params['id'], creator: req.userData.userId }, post).then((result) => {
-    if (result.modifiedCount > 0) {
-      res.status(200).json({ message: 'Update successful!' });
-    } else {
-      res.status(401).json({ message: 'Not authorized!' });
-    }
-  });
+  PostModel.updateOne({ _id: req.params['id'], creator: req.userData.userId }, post)
+    .then((result) => {
+      if (result.modifiedCount > 0) {
+        res.status(200).json({ message: 'Update successful!' });
+      } else {
+        res.status(401).json({ message: 'Not authorized!' });
+      }
+    })
+    .catch((error) => {
+      res.status(500).json({ message: "Couldn't update post!" });
+    });
 });
 
 postsRouter.get('', (req: Request, res: Response, next: NextFunction) => {
@@ -77,25 +84,30 @@ postsRouter.get('', (req: Request, res: Response, next: NextFunction) => {
         posts: fetchedPosts,
         postsCount: count
       });
-    });
+    })
+    .catch((error) => res.status(500).json({ message: 'Fetching posts failed!' }));
 });
 
 postsRouter.get('/:id', (req: Request, res: Response, next: NextFunction) => {
-  PostModel.findById(req.params['id']).then((post) => {
-    if (post) {
-      res.status(200).json(post);
-    } else {
-      res.status(404).json({ message: 'Post not found!' });
-    }
-  });
+  PostModel.findById(req.params['id'])
+    .then((post) => {
+      if (post) {
+        res.status(200).json(post);
+      } else {
+        res.status(404).json({ message: 'Post not found!' });
+      }
+    })
+    .catch((error) => res.status(500).json({ message: 'Fetching post failed!' }));
 });
 
 postsRouter.delete('/:id', AuthMiddleware.checkAuthMiddlewareFunction, (req: Request, res: Response, next: NextFunction) => {
-  PostModel.deleteOne({ _id: req.params['id'], creator: req.userData.userId }).then((result) => {
-    if (result.deletedCount > 0) {
-      res.status(200).json({ message: 'Post deleted!' });
-    } else {
-      res.status(401).json({ message: 'Not authorized!' });
-    }
-  });
+  PostModel.deleteOne({ _id: req.params['id'], creator: req.userData.userId })
+    .then((result) => {
+      if (result.deletedCount > 0) {
+        res.status(200).json({ message: 'Post deleted!' });
+      } else {
+        res.status(401).json({ message: 'Not authorized!' });
+      }
+    })
+    .catch((error) => res.status(500).json({ message: 'Deleting post failed!' }));
 });

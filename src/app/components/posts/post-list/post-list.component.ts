@@ -30,15 +30,19 @@ export class PostListComponent implements OnInit {
     this.userId = this.authService.getUserId();
 
     // subscribe to the postsUpdated Subject in the PostService. Anytime there is an update to the posts in PostService, update our local post array
-    this.postsSubscription = this.postsService.getPostsUpdatedListener().subscribe((postData: { posts: Post[]; postsCount: number }) => {
-      this.isLoading = false;
-      this.posts = postData.posts;
-      this.totalPosts = postData.postsCount;
+    this.postsSubscription = this.postsService.getPostsUpdatedListener().subscribe({
+      next: (postData: { posts: Post[]; postsCount: number }) => {
+        this.isLoading = false;
+        this.posts = postData.posts;
+        this.totalPosts = postData.postsCount;
+      }
     });
     this.userIsAuthenticated = this.authService.getIsAuthenticated();
-    this.authStatusSubscription = this.authService.getAuthStatusListener().subscribe((isAuthenticated) => {
-      this.userIsAuthenticated = isAuthenticated;
-      this.userId = this.authService.getUserId();
+    this.authStatusSubscription = this.authService.getAuthStatusListener().subscribe({
+      next: (isAuthenticated) => {
+        this.userIsAuthenticated = isAuthenticated;
+        this.userId = this.authService.getUserId();
+      }
     });
   }
 
@@ -51,8 +55,9 @@ export class PostListComponent implements OnInit {
 
   onDelete(postId: string) {
     this.isLoading = true;
-    this.postsService.deletePost(postId).subscribe(() => {
-      this.postsService.getPosts(this.postsPerPage, this.currentPage);
+    this.postsService.deletePost(postId).subscribe({
+      next: () => this.postsService.getPosts(this.postsPerPage, this.currentPage),
+      error: () => (this.isLoading = false)
     });
   }
 

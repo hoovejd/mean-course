@@ -9,7 +9,7 @@ class AuthMiddleware {
       const decodedToken: any = jwt.verify(token, 'secret_this_should_be_really_long');
       req.userData = { email: decodedToken.email, userId: decodedToken.userId };
     } catch (error) {
-      res.status(401).json({ message: 'Auth failed!' });
+      res.status(401).json({ message: `You are not authenticated: ${error}` });
     }
     next();
   }

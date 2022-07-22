@@ -20,9 +20,7 @@ userRouter.post('/signup', (req: Request, res: Response, next: NextFunction) => 
         });
       })
       .catch((err) => {
-        res.status(500).json({
-          error: err
-        });
+        res.status(500).json({ message: `Invalid authentication credentials: ${err}` });
       });
   });
 });
@@ -50,8 +48,6 @@ userRouter.post('/login', (req: Request, res: Response, next: NextFunction): any
       res.status(200).json({ token: token, expiresIn: 3600, userId: fetchedUser._id }); //send 3600 second duration (1 hour)
     })
     .catch((err) => {
-      return res.status(401).json({
-        message: 'Authentication failed yo!'
-      });
+      return res.status(401).json({ message: `Invalid authentication credentials: ${err}` });
     });
 });
